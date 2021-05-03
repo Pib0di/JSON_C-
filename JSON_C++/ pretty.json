@@ -1,18 +1,37 @@
 {
-    "answer": {
-        "everything": 42
-    },
-    "happy": true,
-    "list": [
-        1,
-        0,
-        2
-    ],
-    "name": "Niels",
-    "nothing": null,
-    "object": {
-        "currency": "USD",
-        "value": 42.99
-    },
-    "pi": 3.141
+    "Cyty": "Russia",
+    "Date": "20/04/2021",
+    "File": "Pharmacy bases",
+    "List_pharmacy_base": [
+        {
+            "You_life": {
+                "Adress": "",
+                "Automated": true,
+                "Number": "12709",
+                "Remark": "Nice, but expensive"
+            }
+        },
+        {
+            "Heal": {
+                "Num": "1245709"
+            }
+        },
+        {
+            "currency": [
+                [
+                    "USD",
+                    "sdf"
+                ],
+                [
+                    "value",
+                    42.99
+                ],
+                [
+                    "Phone",
+                    1,
+                    4
+                ]
+            ]
+        }
+    ]
 }

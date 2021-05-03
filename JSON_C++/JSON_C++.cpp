@@ -16,73 +16,81 @@ class Pharm
 {
 public:
     Pharm() = default;
-    Pharm(string name, bool w, vector<ll_int> phone, int w_num, string remark) :
-        name(name), warehause(w), v_phone_num(phone), w_num(w_num), remark(remark)
-    {}
+    Pharm(string n, bool w, ll_int phone, int num, string r) :
+        name(n), warehause(w), v_phone_num(phone), w_num(num), remark(r)
+    {
+        j["List_pharmacy_base"] += {name, { {"Warehause", warehause}, {"Phone number", v_phone_num}, {"Warehause number", w_num}, {"Remark", remark} }};
+    }
+    Pharm(vector<string>& name, vector<bool>& w, vector<ll_int>& phone, vector<int>& num, vector<string>& r)
+    {
+        for (int i = 0; i < name.size(); ++i)
+        {
+            bool b_w = w[i];
+            j["List_pharmacy_base"] += {
+                name[i],
+                {
+                    {"Warehause", b_w},
+                    {"Phone number", phone[i]},
+                    {"Warehause number", num[i]},
+                    {"Remark", r[i]}
+                }
+            };
+        }
+    }
 
+    void show(int i)
+    {
+        cout << j.dump(i);
+    }
+
+    void add(string name, bool war, ll_int phone, int w_num, string remark)
+    {
+        j["List_pharmacy_base"] += { {name, { {"Warehause", war}, {"Phone number", phone}, {"Warehause number", w_num}, {"Remark", remark} }}};
+    }
+
+    json& get()
+    {
+        return j;
+    }
 private:
     string name;
     bool warehause = false; // наличие склада
-    vector<ll_int> v_phone_num; // номенр тел.
+    ll_int v_phone_num; // номенр тел.
     int w_num = 0; // номер базы
     string remark = ""; // отзыв
+    //j4["List_pharmacy_base"] += { {"currency", { {"USD", "sdf"}, { "value", 42.99 } }} } /*{j_list_of_pairs, 3, 4, 3, 4}*/;
+    json j = R"(
+    {
+        "File": "Pharmacy bases",
+        "Cyty": "Russia",
+        "Date": "20/04/2021",
+        "List_pharmacy_base": 
+        [
+            
+        ]
+    }
+    )"_json;
 };
 
 int main()
 {
-    Pharm pharm();
-    json j = "{ \"happy\": true, \"pi\": 3.141 }"_json;
-
-    vector<string> v_name = {"Скажем нет болезням", "Мое здоровье", "А. аптека"};
+    Pharm pharm_0;
+    //pharm_0.show();
+    
+    vector<string> v_name = {"No to diseases", "Heal", "P. pharm"};
     vector<bool> v_warehause = {true, false, false};
-    vector<vector<ll_int>> v_phone = { {89626766044, 89098367854, 94238764977}, {947586926409, 845357209521}, {924375627354} };
+    vector<ll_int> v_phone = { 89626766044, 947586926409, 924375627354 };
     vector<int> v_w_num = {393, 254, 458};
-    vector<string> v_remark = {"Отличная аптека, низкие цены", "Не советую", "Закрыта!"};
+    vector<string> v_remark = {"Sale!", "discount", "destroyed!"};
 
     for (int i = 0; i < v_name.size(); ++i)
     {
-        
+        bool warehause = v_warehause[i];
+        pharm_0.add(v_name[i], warehause, v_phone[i], v_w_num[i], v_remark[i]);
     }
 
+    pharm_0.show(4);
 
-    
-
-
-
-    // or even nicer with a raw string literal
-    auto j2 = R"(
- {
-  "pi": 3.141,
-  "happy": true,
-  "name": "Niels",
-  "nothing": null,
-  "answer": {
-    "everything": 42
-  },
-  "list": [1, 0, 2],
-  "object": {
-    "currency": "USD",
-    "value": 42.99
-  }
-}
-)"_json;
-
-    // parse explicitly
-    auto j3 = json::parse("{ \"happy\": true, \"pi\": 3.141 }");
-
-
-    // explicit conversion to string
-    std::string s = j.dump();    // {\"happy\":true,\"pi\":3.141}
-
-    // serialization with pretty printing
-    // pass in the amount of spaces to indent
-    //cout << s;
-    std::cout << j.dump(4) << std::endl;
-    // {
-    //     "happy": true,
-    //     "pi": 3.141
-    // }
-
-    std::ofstream o ( " pretty.json " );
-    o << setw(4) << j2 << std::endl;
+    std::ofstream o ( " pharm.json " );
+    o << setw(4) << pharm_0.get() << std::endl;
 }

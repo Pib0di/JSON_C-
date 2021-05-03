@@ -1,0 +1,31 @@
+{
+    "Cyty": "Russia",
+    "Date": "20/04/2021",
+    "File": "Pharmacy bases",
+    "List_pharmacy_base": [
+        {
+            "No to diseases": {
+                "Phone number": 89626766044,
+                "Remark": "Sale!",
+                "Warehause": true,
+                "Warehause number": 393
+            }
+        },
+        {
+            "Heal": {
+                "Phone number": 947586926409,
+                "Remark": "discount",
+                "Warehause": false,
+                "Warehause number": 254
+            }
+        },
+        {
+            "P. pharm": {
+                "Phone number": 924375627354,
+                "Remark": "destroyed!",
+                "Warehause": false,
+                "Warehause number": 458
+            }
+        }
+    ]
+}
