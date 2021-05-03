@@ -75,7 +75,6 @@ private:
 int main()
 {
     Pharm pharm_0;
-    //pharm_0.show();
     
     vector<string> v_name = {"No to diseases", "Heal", "P. pharm"};
     vector<bool> v_warehause = {true, false, false};
@@ -88,9 +87,15 @@ int main()
         bool warehause = v_warehause[i];
         pharm_0.add(v_name[i], warehause, v_phone[i], v_w_num[i], v_remark[i]);
     }
+    //pharm_0.show(4);
 
-    pharm_0.show(4);
-
-    std::ofstream o ( " pharm.json " );
+    //Serialization
+    std::ofstream o ("pharm.json");
     o << setw(4) << pharm_0.get() << std::endl;
+
+    //Deserialization
+    std::ifstream i("pharm.json");
+    json j_input;
+    i >> j_input;
+    cout << j_input.dump(4);
 }
