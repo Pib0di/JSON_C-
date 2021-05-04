@@ -1,5 +1,5 @@
 ﻿// JSON_C++.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
-//
+// 7 лаба
 
 #include <iostream>
 #include <fstream>
@@ -37,6 +37,10 @@ public:
             };
         }
     }
+    Pharm(json js)
+    {
+        j = js;
+    }
 
     void show(int i)
     {
@@ -53,12 +57,11 @@ public:
         return j;
     }
 private:
-    string name;
+    string name; // имя аптеки
     bool warehause = false; // наличие склада
     ll_int v_phone_num; // номенр тел.
     int w_num = 0; // номер базы
     string remark = ""; // отзыв
-    //j4["List_pharmacy_base"] += { {"currency", { {"USD", "sdf"}, { "value", 42.99 } }} } /*{j_list_of_pairs, 3, 4, 3, 4}*/;
     json j = R"(
     {
         "File": "Pharmacy bases",
@@ -72,11 +75,96 @@ private:
     )"_json;
 };
 
+void input_table(json data)
+{
+    int count = data["List_pharmacy_base"].size();
+    string name;
+    int i = data.size();
+
+    cout << "Общие данные" << endl;
+    for (auto it = data.begin(); it != data.end(); ++it)
+    {
+        if (i == 1)
+        {
+            cout << it.key() << ": \n" << endl;
+        }
+        else
+        {
+            cout << it.key() << ": " << it.value() << endl;
+        }
+        --i;
+    }
+    i = 0;
+    cout << '\t' << setw(10) << " ";
+    name = data["List_pharmacy_base"][0].begin().key();
+    for (auto it = data["List_pharmacy_base"][0][name].begin(); it != data["List_pharmacy_base"][0][name].end(); ++it)
+    {
+        cout << setw(10) << " " << it.key();
+    }
+    cout << endl;
+    for (int i = 0; i < count; ++i)
+    {
+        //if (data["List_pharmacy_base"][i][name] != 0)
+        //{
+            name = data["List_pharmacy_base"][i].begin().key();
+            cout << name;
+            for (auto const& val : data["List_pharmacy_base"][i][name])
+            {
+                cout << '\t' << setw(10) << " " << val;
+            }
+            cout << endl;
+        //}
+    }
+}
+
+void func(json data)
+{
+    string cmd;
+    int num;
+
+    Pharm pharm(data);
+    while (cmd != "exit")
+    {
+        cout << "\nУдаление \"del\" + \"номер строки\". \nДобавление \"add\" + ввод соответствующих данных. \nВыход - \"exit\". \nПоказать табл \"show\"\n" << endl;
+        cin >> cmd;
+        if (cmd == "del")
+        {
+            cout << "Введите номер строки: " << endl;
+            cin >> num;
+            pharm.get()["List_pharmacy_base"].erase(num);
+        }
+        else if (cmd == "add")
+        {
+
+            string name, remark;
+            bool war;
+            ll_int numb;
+            int num_w;
+            cout << "Последовательно введите Имя аптеки(string), наличие склада(bool), номер телефона(int), номер базы(int), отзыв(str)" << endl;
+            cin >> name >> war >> numb >> num_w >> remark;
+            pharm.add(name, war, numb, num_w, remark);
+            cin.clear();
+            cin.ignore();
+        }
+        else if (cmd == "exit")
+        {
+            break;
+        }
+        else if (cmd == "show")
+        {
+            input_table(pharm.get());
+        }
+        std::ofstream o("pharm.json");
+        o << setw(4) << pharm.get() << std::endl;
+    }
+}
+
 int main()
 {
+    setlocale(LC_ALL, "ru");
     Pharm pharm_0;
     
-    vector<string> v_name = {"No to diseases", "Heal", "P. pharm"};
+    vector<string> v_name = {"No to diseases", "Heal    ", "P. pharm"};
     vector<bool> v_warehause = {true, false, false};
     vector<ll_int> v_phone = { 89626766044, 947586926409, 924375627354 };
     vector<int> v_w_num = {393, 254, 458};
@@ -84,10 +172,8 @@ int main()
 
     for (int i = 0; i < v_name.size(); ++i)
     {
-        bool warehause = v_warehause[i];
-        pharm_0.add(v_name[i], warehause, v_phone[i], v_w_num[i], v_remark[i]);
+        pharm_0.add(v_name[i], v_warehause[i], v_phone[i], v_w_num[i], v_remark[i]);
     }
-    //pharm_0.show(4);
 
     //Serialization
     std::ofstream o ("pharm.json");
@@ -97,5 +183,12 @@ int main()
     std::ifstream i("pharm.json");
     json j_input;
     i >> j_input;
-    cout << j_input.dump(4);
+    //cout << j_input.dump(4);
+
+    //Вывод в виде таблицы
+    json data = j_input;
+    input_table(data);
+
+    //удаление добавление
+    func(data);
 }
