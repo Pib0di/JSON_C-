@@ -1,90 +1,27 @@
 ﻿// JSON_C++.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
 // 7 лаба
-
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include "json.hpp"
 #include <vector>
 #include <string>
+#include "pharm.cpp"
+#include "pharmacy_data.cpp"
 
-using json = nlohmann::json;
 using namespace std;
-typedef long long int ll_int;
 
-class Pharm
-{
-public:
-    Pharm() = default;
-    Pharm(string n, bool w, ll_int phone, int num, string r) :
-        name(n), warehause(w), v_phone_num(phone), w_num(num), remark(r)
-    {
-        j["List_pharmacy_base"] += {name, { {"Warehause", warehause}, {"Phone number", v_phone_num}, {"Warehause number", w_num}, {"Remark", remark} }};
-    }
-    Pharm(vector<string>& name, vector<bool>& w, vector<ll_int>& phone, vector<int>& num, vector<string>& r)
-    {
-        for (int i = 0; i < name.size(); ++i)
-        {
-            bool b_w = w[i];
-            j["List_pharmacy_base"] += {
-                name[i],
-                {
-                    {"Warehause", b_w},
-                    {"Phone number", phone[i]},
-                    {"Warehause number", num[i]},
-                    {"Remark", r[i]}
-                }
-            };
-        }
-    }
-    Pharm(json js)
-    {
-        j = js;
-    }
 
-    void show(int i)
-    {
-        cout << j.dump(i);
-    }
-
-    void add(string name, bool war, ll_int phone, int w_num, string remark)
-    {
-        j["List_pharmacy_base"] += { {name, { {"Warehause", war}, {"Phone number", phone}, {"Warehause number", w_num}, {"Remark", remark} }}};
-    }
-
-    json& get()
-    {
-        return j;
-    }
-private:
-    string name; // имя аптеки
-    bool warehause = false; // наличие склада
-    ll_int v_phone_num; // номенр тел.
-    int w_num = 0; // номер базы
-    string remark = ""; // отзыв
-    json j = R"(
-    {
-        "File": "Pharmacy bases",
-        "Cyty": "Russia",
-        "Date": "20/04/2021",
-        "List_pharmacy_base": 
-        [
-            
-        ]
-    }
-    )"_json;
-};
-
-void input_table(json data)
+void outputTable(json data)
 {
     int count = data["List_pharmacy_base"].size();
     string name;
-    int i = data.size();
+    int dataLength = data.size();
 
     cout << "Общие данные" << endl;
     for (auto it = data.begin(); it != data.end(); ++it)
     {
-        if (i == 1)
+        if (dataLength == 1)
         {
             cout << it.key() << ": \n" << endl;
         }
@@ -92,9 +29,9 @@ void input_table(json data)
         {
             cout << it.key() << ": " << it.value() << endl;
         }
-        --i;
+        --dataLength;
     }
-    i = 0;
+    dataLength = 0;
     cout << '\t' << setw(10) << " ";
     name = data["List_pharmacy_base"][0].begin().key();
     for (auto it = data["List_pharmacy_base"][0][name].begin(); it != data["List_pharmacy_base"][0][name].end(); ++it)
@@ -104,56 +41,71 @@ void input_table(json data)
     cout << endl;
     for (int i = 0; i < count; ++i)
     {
-        //if (data["List_pharmacy_base"][i][name] != 0)
-        //{
-            name = data["List_pharmacy_base"][i].begin().key();
-            cout << name;
-            for (auto const& val : data["List_pharmacy_base"][i][name])
-            {
-                cout << '\t' << setw(10) << " " << val;
-            }
-            cout << endl;
-        //}
+        name = data["List_pharmacy_base"][i].begin().key();
+        cout << name;
+        for (auto const& val : data["List_pharmacy_base"][i][name])
+        {
+            cout << '\t' << setw(10) << " " << val;
+        }
+        cout << endl;
+        
     }
 }
 
-void func(json data)
+void eventLoop(json data)
 {
     string cmd;
     int num;
 
     Pharm pharm(data);
-    while (cmd != "exit")
-    {
-        cout << "\nУдаление \"del\" + \"номер строки\". \nДобавление \"add\" + ввод соответствующих данных. \nВыход - \"exit\". \nПоказать табл \"show\"\n" << endl;
-        cin >> cmd;
-        if (cmd == "del")
-        {
-            cout << "Введите номер строки: " << endl;
-            cin >> num;
-            pharm.get()["List_pharmacy_base"].erase(num);
-        }
-        else if (cmd == "add")
-        {
 
+    int choice = 0;
+    while (choice != 4) {
+        cout << "Выберите действие:\n";
+        cout << "1. Показать аптеки\n";
+        cout << "2. Удалить аптеку\n";
+        cout << "3. Добавить аптеку\n";
+        cout << "4. Выход\n";
+        cin >> choice;
+
+        switch (choice) {
+        case 1:
+            outputTable(pharm.get());
+            break;
+        case 2:
+            int index;
+            cout << "Введите номер аптеки для удаления: ";
+            cin >> index;
+            pharm.remove(index);
+            break;
+        case 3: {
             string name, remark;
             bool war;
             ll_int numb;
             int num_w;
-            cout << "Последовательно введите Имя аптеки(string), наличие склада(bool), номер телефона(int), номер базы(int), отзыв(str)" << endl;
-            cin >> name >> war >> numb >> num_w >> remark;
-            pharm.add(name, war, numb, num_w, remark);
+            cout << "Введите данные для новой аптеки:\n";
+            cout << "Имя аптеки (строка): ";
+            cin >> name;
+            cout << "Наличие склада (1 - да, 0 - нет): ";
+            cin >> war;
+            cout << "Номер телефона: ";
+            cin >> numb;
+            cout << "Номер базы: ";
+            cin >> num_w;
+            cout << "Отзыв (строка): ";
+            cin >> remark;
+            pharm.add(PharmacyData(name, war, numb, num_w, remark));
             cin.clear();
             cin.ignore();
-        }
-        else if (cmd == "exit")
-        {
             break;
         }
-        else if (cmd == "show")
-        {
-            input_table(pharm.get());
+        case 4:
+            break;
+        default:
+            cout << "Неверный выбор. Пожалуйста, выберите снова.\n";
+            break;
         }
+
         std::ofstream o("pharm.json");
         o << setw(4) << pharm.get() << std::endl;
     }
@@ -162,7 +114,7 @@ void func(json data)
 int main()
 {
     setlocale(LC_ALL, "ru");
-    Pharm pharm_0;
+    Pharm pharm;
     
     vector<string> v_name = {"No to diseases", "Heal    ", "P. pharm"};
     vector<bool> v_warehause = {true, false, false};
@@ -172,23 +124,23 @@ int main()
 
     for (int i = 0; i < v_name.size(); ++i)
     {
-        pharm_0.add(v_name[i], v_warehause[i], v_phone[i], v_w_num[i], v_remark[i]);
+        PharmacyData pharmacyData(v_name[i], v_warehause[i], v_phone[i], v_w_num[i], v_remark[i]);
+        pharm.add(pharmacyData);
     }
 
     //Serialization
     std::ofstream o ("pharm.json");
-    o << setw(4) << pharm_0.get() << std::endl;
+    o << setw(4) << pharm.get() << std::endl;
 
     //Deserialization
     std::ifstream i("pharm.json");
     json j_input;
     i >> j_input;
-    //cout << j_input.dump(4);
 
     //Вывод в виде таблицы
     json data = j_input;
-    input_table(data);
+    outputTable(data);
 
     //удаление добавление
-    func(data);
+    eventLoop(data);
 }
