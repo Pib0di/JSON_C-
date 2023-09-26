@@ -140,6 +140,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="JSON_C++.cpp" />
+    <ClCompile Include="pharm.cpp" />
+    <ClCompile Include="pharmacy_data.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="json-develop\single_include\nlohmann\json.hpp" />
